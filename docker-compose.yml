@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: surge-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: surge_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: surge-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: surge-media
+    ports:
+      - "1935:1935"   # RTMP ingest (OBS)
+      - "8554:8554"   # RTSP
+      - "8888:8888"   # HLS playback
+      - "8889:8889"   # WebRTC
+    restart: unless-stopped
+
+  minio:
+    image: rustfs/rustfs:latest
+    container_name: surge-minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Console UI
+    environment:
+      RUSTFS_ROOT_USER: minioadmin
+      RUSTFS_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  minio_data:

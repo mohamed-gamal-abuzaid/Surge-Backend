@@ -1,0 +1,35 @@
+# === Build ===
+target/
+*.jar
+*.war
+*.class
+
+# === IDE ===
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+out/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Environment & Secrets ===
+.env
+application-prod.yml
+*.pem
+*.key
+
+# === Logs ===
+logs/
+*.log
+
+# === Docker ===
+docker-compose.override.yml
+
+# === Misc ===
+.gradle/
+node_modules/
