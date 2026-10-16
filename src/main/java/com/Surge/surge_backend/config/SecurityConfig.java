@@ -42,6 +42,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // الـ Auth endpoints — مفتوحة للكل
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        // Webhooks سيرفر البث MediaMTX — مفتوحة له عشان يقدر يتأكد من الـ stream key
+                        .requestMatchers("/api/internal/media/**").permitAll()
                         // Swagger — مفتوح للكل
                         .requestMatchers(
                                 "/swagger-ui/**",
