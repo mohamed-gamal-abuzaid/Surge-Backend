@@ -77,4 +77,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(500, ex.getMessage() != null ? ex.getMessage() : "Something went wrong. Please try again later."));
     }
+
+    // === Resource Not Found (404 NOT FOUND) ===
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(404, ex.getMessage()));
+    }
 }

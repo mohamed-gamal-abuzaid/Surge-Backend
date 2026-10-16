@@ -40,10 +40,8 @@ public class SecurityConfig {
 
                 // 3. حدد مين يقدر يوصل لإيه
                 .authorizeHttpRequests(auth -> auth
-
                         // الـ Auth endpoints — مفتوحة للكل
                         .requestMatchers("/api/v1/auth/**").permitAll()
-
                         // Swagger — مفتوح للكل
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -51,12 +49,14 @@ public class SecurityConfig {
                                 "/api-docs/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-
-                        // الـ GET requests العامة — مفتوحة (مشاهدة بثوث، قنوات، categories)
+                        // Endpoints خاصة بالقناة محتاجة حماية (لازم تيجي قبل الـ GET العامة)
+                        .requestMatchers("/api/v1/channels/me/**").authenticated()
+                        .requestMatchers("/api/v1/users/me/**").authenticated()
+                        // الـ GET requests العامة — مفتوحة (مشاهدة بروفايل، بثوث، قنوات، فئات)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/channels/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/streams/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/channels/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
-
                         // أي حاجة تانية — لازم يكون مسجل دخول
                         .anyRequest().authenticated()
                 )

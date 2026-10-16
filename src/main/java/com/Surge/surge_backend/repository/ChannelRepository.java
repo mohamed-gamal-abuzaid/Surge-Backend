@@ -14,5 +14,7 @@ public interface ChannelRepository extends JpaRepository<Channel, UUID> {
 
     Optional<Channel> findByUserId(UUID userId);
 
+    Optional<Channel> findByStreamKey(UUID streamKey); // هنحتاجها جداً لما السيرفر يتحقق من OBS
+
     Boolean existsByChannelName(String channelName);
 }
