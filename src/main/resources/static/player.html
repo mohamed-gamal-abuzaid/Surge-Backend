@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surge - Live Stream Player</title>
+    <!-- Hls.js Library (Used by Twitch, Kick, and modern video players) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0e0e10;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #efeff1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #9146ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        .live-badge {
+            background-color: #e91916;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .player-container {
+            width: 90%;
+            max-width: 1000px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid #1f1f23;
+        }
+        video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+        }
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            width: 90%;
+            max-width: 1000px;
+        }
+        input {
+            flex: 1;
+            padding: 10px 14px;
+            background: #18181b;
+            border: 1px solid #303032;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        button {
+            padding: 10px 20px;
+            background: #9146ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #772ce8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🌊 Surge Live Stream <span class="live-badge">LIVE</span></h1>
+        <p>Direct HLS Playback for Chrome & Brave</p>
+    </div>
+
+    <div class="player-container">
+        <video id="video" controls autoplay muted></video>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="streamUrl" value="http://localhost:8888/live/49da4e95-3c84-48a2-9d29-25878e664c9f/index.m3u8">
+        <button onclick="loadStream()">Play Stream</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const streamUrlInput = document.getElementById('streamUrl');
+        let hls = null;
+
+        function loadStream() {
+            const videoSrc = streamUrlInput.value.trim();
+
+            if (Hls.isSupported()) {
+                if (hls) {
+                    hls.destroy();
+                }
+                hls = new Hls({
+                    liveSyncDurationCount: 3,
+                    liveMaxLatencyDurationCount: 6,
+                    enableWorker: true
+                });
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play().catch(e => console.log("Autoplay blocked:", e));
+                });
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log("Network error encountered, trying to recover...");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log("Media error encountered, trying to recover...");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function () {
+                    video.play();
+                });
+            } else {
+                alert('Your browser does not support HLS streaming.');
+            }
+        }
+
+        // Auto load on start
+        window.onload = loadStream;
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# MediaMTX Configuration for Surge Streaming Platform
+rtmp: yes
+rtsp: yes
+hls: yes
+webrtc: yes
+
+# External HTTP Authentication
+# MediaMTX sends action: "publish" for streamers, and action: "read" for viewers
+authMethod: http
+authHTTPAddress: http://192.168.1.4:8081/api/internal/media/publish
+
+# Paths configuration
+paths:
+  all:
+    runOnUnavailable: curl -X POST http://192.168.1.4:8081/api/internal/media/unpublish -H "Content-Type:application/json" -d '{\"path\":\"$MTX_PATH\"}'
