@@ -50,10 +50,8 @@ public class StreamService {
         channel.setIsLive(true);
         channelRepository.save(channel);
 
-        // 4. تجهيز روابط البث
-        // MediaMTX بيفتح مسار HLS باسم القناة تلقائياً: http://localhost:8888/{channelName}/index.m3u8
-        String streamPath = channel.getChannelName();
-        String playbackUrl = HLS_BASE_URL + "/" + streamPath + "/index.m3u8";
+        // 4. تجهيز روابط البث المطابقة لمسار MediaMTX
+        String playbackUrl = HLS_BASE_URL + "/live/" + streamKey + "/index.m3u8";
 
         // 5. إنشاء سجل البث المباشر
         Stream stream = Stream.builder()

@@ -44,8 +44,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // Webhooks سيرفر البث MediaMTX — مفتوحة له عشان يقدر يتأكد من الـ stream key
                         .requestMatchers("/api/internal/media/**").permitAll()
-                        // Swagger — مفتوح للكل
+                        // Swagger & Static Player & HTML files — مفتوح للكل
                         .requestMatchers(
+                                "/player",
+                                "/*.html",
+                                "/player.html",
+                                "/static/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api-docs/**",

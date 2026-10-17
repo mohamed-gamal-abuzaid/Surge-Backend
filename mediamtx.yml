@@ -1,17 +1,15 @@
-# إعدادات البروتوكولات
+# MediaMTX Configuration for Surge Streaming Platform
 rtmp: yes
 rtsp: yes
 hls: yes
 webrtc: yes
 
-# إعدادات مصادقة البث (Auth Webhook)
-# لما OBS يضغط Start Streaming، ميديا إم تي إكس هيبعت طلب للباك إند
+# External HTTP Authentication
+# MediaMTX sends action: "publish" for streamers, and action: "read" for viewers
 authMethod: http
-authHTTPAddress: http://host.docker.internal:8080/api/internal/media/publish
+authHTTPAddress: http://192.168.1.4:8081/api/internal/media/publish
 
-# مسارات البث
+# Paths configuration
 paths:
   all:
-    # لما الستريمر يقفل البث (Stop Streaming)، هيبعت طلب إشعار بانتهاء البث
-    runOnUnpublish: curl -X POST http://host.docker.internal:8080/api/internal/media/unpublish -H "Content-Type:application/json" -d '{"path":"$MTX_PATH"}'
-    runOnUnpublishRestart: no
+    runOnUnavailable: curl -X POST http://192.168.1.4:8081/api/internal/media/unpublish -H "Content-Type:application/json" -d '{\"path\":\"$MTX_PATH\"}'

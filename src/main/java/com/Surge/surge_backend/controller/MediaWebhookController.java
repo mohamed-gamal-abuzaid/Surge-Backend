@@ -25,7 +25,12 @@ public class MediaWebhookController {
     // ========================================================
     @PostMapping("/publish")
     public ResponseEntity<ApiResponse> onStreamPublish(@RequestBody MediaMtxWebhookRequest request) {
-        log.info("📡 Ingest Webhook (Publish) received for path: {}", request.getPath());
+        log.info("📡 Ingest Webhook received - Action: {}, Path: {}", request.getAction(), request.getPath());
+
+        // إذا كان الطلب من مشاهد (Read / Playback) نسمح له فوراً مجاناً بدون فحص الـ stream key
+        if ("read".equalsIgnoreCase(request.getAction())) {
+            return ResponseEntity.ok(ApiResponse.success("Read access granted"));
+        }
 
         try {
             // استخراج الـ StreamKey من الـ Path
